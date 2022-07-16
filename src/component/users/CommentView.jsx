@@ -20,7 +20,8 @@ export default function CommentView(props) {
   const comments = useSelector((state) => state.repoComment.repoComments);
 
   return (
-    <List sx={{ width: "100%", maxWidth: 400, bgcolor: "background.paper" }}>
+  
+    <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper"}}>
       {comments?.length > 0  && 
            <Typography variant="subtitle1" style={{padding:'10px'}}>View All Comments...</Typography>
       }
@@ -28,8 +29,8 @@ export default function CommentView(props) {
        <Scrollbars
             autoHeight={true}
        
-            autoHeightMax={"calc(100vh - 450px)"}
-            style={{ width: 800,boxShadow:'3px 3px 3px -2px rgb(0 0 0 / 20%), 0px 3px 4px 0px rgb(0 0 0 / 14%)' ,marginLeft:'20px'}}
+            autoHeightMax={"calc(100vh - 350px)"}
+            style={{ width: 750,boxShadow:'3px 3px 3px -2px rgb(0 0 0 / 20%), 0px 3px 4px 0px rgb(0 0 0 / 14%)' ,marginLeft:'20px'}}
           >
       {comments?.map((comment) => {
         return (
@@ -62,5 +63,6 @@ export default function CommentView(props) {
       })}
       </Scrollbars>
     </List>
+   
   );
 }

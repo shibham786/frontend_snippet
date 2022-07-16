@@ -6,7 +6,7 @@ import CardMedia from "@mui/material/CardMedia";
 import { NavLink } from "react-router-dom";
 import CardActions from "@mui/material/CardActions";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-
+import LinkIcon from '@mui/icons-material/Link';
 import Favorite from "@mui/icons-material/Favorite";
 import {
   Checkbox,
@@ -20,7 +20,7 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-
+  Tooltip,
   MenuItem,
 } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
@@ -30,6 +30,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ShareIcon from "@mui/icons-material/Share";
 import {DeleteRepo} from "../../store/slices/RepoSlice"
 import { useEffect } from "react";
+import CopyToClipboard from "react-copy-to-clipboard";
 
 export default function RepoCard(props) {
   // const [repo, setRepo] = useState(repo);
@@ -39,7 +40,9 @@ export default function RepoCard(props) {
   //menu open and close
   const [anchorEl, setAnchorEl] = React.useState(null);
 
-  const [DialogOpen,SetDialogOpen] = useState(null)
+  const [Copied, setCopied] = useState(false);
+
+  const [DialogOpen,SetDialogOpen] = useState(null);
 
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -236,9 +239,22 @@ export default function RepoCard(props) {
             />
             {props?.repo?.total_likes}
           </IconButton>
-          <IconButton aria-label="share">
-            <ShareIcon style={{ color: "#ffff" }} />
-          </IconButton>
+
+          <CopyToClipboard text={`http://localhost:3000/UserRepoDetail/${repo?.repo_id}`} onCopy={()=>{
+                   setCopied(true)
+                   setTimeout(() => {
+                    setCopied(false)
+                   }, 2000);
+              }}>
+              <Tooltip title={Copied ? ' Link Copied':'copy'}>
+                <IconButton>
+                <LinkIcon style={{ color: "#ffff" }} />
+                </IconButton>
+              </Tooltip>
+              </CopyToClipboard>
+          {/* <IconButton aria-label="share">
+            <LinkIcon style={{ color: "#ffff" }} />
+          </IconButton> */}
         </CardActions>
       </Accordion>
     </Card>

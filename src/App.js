@@ -30,7 +30,7 @@ function App() {
       <Route path="/NewRepository" element={user ? <NewRepository />:<Login/>} />
       <Route path="/UserRepository" element={user ? <UserRepository/>:<Login/>}/>
     
-      <Route path="/UserRepoDetail/:id" element={<UserRepoDetail />} />
+      <Route path="/UserRepoDetail/:id" element={user ? <UserRepoDetail/>:<Login/>}/>
       <Route path="/modal" element={<LanguageChoicePopup />} />
       <Route path="/EditProfile" element={<EditProfile />} />
       <Route path="/ChangePassword" element={<ChangePassword />} />

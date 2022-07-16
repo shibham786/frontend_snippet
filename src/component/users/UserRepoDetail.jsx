@@ -15,7 +15,7 @@ import {
   CardHeader,
   Stack,
   Typography,
-  Button,
+  Tooltip,
   CardContent,
 } from "@mui/material";
 import { Container } from "@mui/system";
@@ -27,62 +27,67 @@ import { Scrollbars } from "react-custom-scrollbars";
 import FavoriteBorder from "@mui/icons-material/FavoriteBorder";
 import Favorite from "@mui/icons-material/Favorite";
 import { AddRepolike } from "../../store/slices/repoLikeSlice";
-import GitHubIcon from '@mui/icons-material/GitHub';
+import GitHubIcon from "@mui/icons-material/GitHub";
 import RepoComment from "./RepoComment";
 import CommentView from "./CommentView";
-import loader from "../../assests/loading.gif"
+import loader from "../../assests/loading.gif";
 import jwtDecode from "jwt-decode";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import CopyToClipboard from "react-copy-to-clipboard";
 
 export default function UserRepoDetail() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [Copied, setCopied] = useState(false);
 
   const repoDetail = useSelector((state) => {
     return state?.repoDetail?.repoDetail;
   });
 
   const repos = useSelector((state) => state?.userRepo?.userRepositories);
-  const pageloading = useSelector((state)=> state?.repoDetail?.loading)
+  const pageloading = useSelector((state) => state?.repoDetail?.loading);
 
   const [dark, setdark] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
   const { id } = useParams();
-    
+
   const [isLiked, setIsLiked] = useState(false);
 
   const { user_id } = jwtDecode(
     JSON.parse(localStorage.getItem("user"))?.access
   );
 
-  
   useEffect(() => {
     console.log("in useEffect", id);
     dispatch(getUserRepositoryDetail(id));
     dispatch(getUserRepositoryByTrending(id));
   }, [id]);
 
-
   useEffect(() => {
     console.log(repoDetail, "=========================");
     setIsLiked(repoDetail?.likes?.includes(user_id));
 
- 
     !!Object.keys(repoDetail).length && setIsLoading(false);
   }, [repoDetail]);
 
-  
   const repoLikeHandler = () => {
     console.log("like", repoDetail?.repo_id);
     dispatch(AddRepolike(repoDetail?.repo_id));
     setIsLiked((prev) => !prev);
     //setIsclick(true)
   };
- 
+
   if (pageloading) {
     return (
       <Grid container>
-        <Grid item md={12} display="flex" flexDirection="row" justifyContent="center">
+        <Grid
+          item
+          md={12}
+          display="flex"
+          flexDirection="row"
+          justifyContent="center"
+        >
           <img
             src={loader}
             alt="simba2"
@@ -90,13 +95,8 @@ export default function UserRepoDetail() {
           />
         </Grid>
       </Grid>
-
     );
   }
-
-  console.log("repos repos:", repos);
-  console.log("user id", user_id);
- 
 
   return (
     <Stack position="sticky" direction="row">
@@ -143,6 +143,18 @@ export default function UserRepoDetail() {
                 zIndex: 1,
               }}
             >
+              <CopyToClipboard text={repoDetail?.code} onCopy={()=>{
+                   setCopied(true)
+                   setTimeout(() => {
+                    setCopied(false)
+                   }, 2000);
+              }}>
+              <Tooltip title={Copied ? 'Copied':'copy'}>
+                <IconButton>
+                  <ContentCopyIcon style={{ color: dark ? '#fff':'#000' }}/>
+                </IconButton>
+              </Tooltip>
+              </CopyToClipboard>
               <IconButton aria-label="add to favorites">
                 <Checkbox
                   onClick={repoLikeHandler}
@@ -179,7 +191,13 @@ export default function UserRepoDetail() {
               )}
             </div>
 
-            <div style={{ position: "relative", marginTop: "20px", overflow: 'hidden' }}>
+            <div
+              style={{
+                position: "relative",
+                marginTop: "20px",
+                overflow: "hidden",
+              }}
+            >
               {isLoading ? (
                 <div>Loading</div>
               ) : (
@@ -228,30 +246,37 @@ export default function UserRepoDetail() {
           <Typography variant="subtitle1" fontWeight="bolder">
             {String(repoDetail?.user_detail?.username).toUpperCase()}
           </Typography>
-          <Typography variant="body2" m={1} sx={{ color: "gray" ,fontWeight:'bold'}}>
-           {repoDetail?.user_detail?.about}
-          </Typography>
-          <a href={repoDetail?.user_detail?.github_link} style={{textDecoration:'none'}} target="_blank">
           <Typography
-          
-            variant="contained"
-            onClick={()=>{
-
-            }}
-            size="large"
-            sx={{ justifyContent: "flex-start",color:'black', borderRadius:'100%' }}
-          
+            variant="body2"
+            m={1}
+            sx={{ color: "gray", fontWeight: "bold" }}
           >
-            <GitHubIcon/>
+            {repoDetail?.user_detail?.about}
           </Typography>
+          <a
+            href={repoDetail?.user_detail?.github_link}
+            style={{ textDecoration: "none" }}
+            target="_blank"
+          >
+            <Typography
+              variant="contained"
+              onClick={() => {}}
+              size="large"
+              sx={{
+                justifyContent: "flex-start",
+                color: "black",
+                borderRadius: "100%",
+              }}
+            >
+              <GitHubIcon />
+            </Typography>
           </a>
           <Divider />
-          <div>    
-            <Typography variant="h4" fontWeight="bold" m={2} >
-            More From Snippet
-          </Typography>
+          <div>
+            <Typography variant="h4" fontWeight="bold" m={2}>
+              More From Snippet
+            </Typography>
           </div>
- 
         </Stack>
         <Stack
           direction="column"
@@ -260,7 +285,7 @@ export default function UserRepoDetail() {
         >
           <Scrollbars
             autoHeight={true}
-            autoHeightMax={"calc(100vh - 100px)"}
+            autoHeightMax={"calc(100vh - 30px)"}
             style={{ width: 445 }}
           >
             {repos?.map((repo) => {
@@ -280,7 +305,7 @@ export default function UserRepoDetail() {
                       pr: 1,
                       alignItems: "center",
                       minWidth: 345,
-                      boxShadow:'-5px -5px -5px gray'
+                      boxShadow: "-5px -5px -5px gray",
                     }}
                     m={2}
                     elevation={3}
